@@ -11,9 +11,11 @@ from chainer.links import VGG16Layers, ResNet50Layers
 
 # param
 input_flag = 'img'
-model_flag = 'VGG'
-e_layer = "fc7"
 data_dir = "lena.jpg" if input_flag == 'img' else 'all_imgs_dic.pkl'
+model_flag = 'VGG'
+# 特徴抽出に使うことができる層はchainer.links.model.vision.vggを見れ.
+# output of the fc7 layer of VGG with input image. the output size is 4096.
+e_layer = "fc7" 
 
 # load image data
 if input_flag == 'img':
@@ -24,17 +26,10 @@ else:
     input_data = dataset['data']
 
 # load model 
-model = VGG16Layers()
-#model = ResNet50Layers() if model_flag == 'ResNet' else VGG16Layers()
+#model = VGG16Layers()
+model = ResNet50Layers() if model_flag == 'ResNet' else VGG16Layers()
 
-#if args.gpu >= 0:
-#    cuda.get_device(args.gpu).use()
-#    model.to_gpu()
-
-# 特徴抽出に使うことができる層はchainer.links.model.vision.vggを見れ.
-# output of the fc7 layer of VGG with input image. the output size is 4096.
 feature = model.extract([input_data], layers=[e_layer])[e_layer]
+#pickle.dump(feature, open('{}_fv.pkl'.format(data_dir), 'wb'), -1)
 
 print("feature vector shape".format(feature.data.shape))
-
-#pickle.dump(feature, open('{}_fv.pkl'.format(data_dir), 'wb'), -1)
